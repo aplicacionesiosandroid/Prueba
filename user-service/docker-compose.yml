@@ -1,0 +1,32 @@
+
+version: '3.8'
+
+services:
+  user-service:
+    build: .
+    container_name: user-service
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - user-db
+    volumes:
+      - .:/app
+    command: sh -c "npx prisma migrate deploy && npm run start:prod"
+
+  user-db:
+    image: postgres:15
+    container_name: user-db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_user:/var/lib/postgresql/data
+
+volumes:
+  pgdata_user:
